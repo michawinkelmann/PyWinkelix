@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PyForge - Learn Python</title>
+<link rel="stylesheet" href="pyforge.css">
+</head>
+<body>
+
+<div class="modal-overlay" id="welcomeModal">
+  <div class="modal-box">
+    <h2>Welcome to PyForge</h2>
+    <p>Learn Python step by step through 12 levels of gaming-themed challenges.</p>
+    <p style="font-size:12px; color: var(--accent);">Built-in Python interpreter &middot; No setup required &middot; Progress saves automatically</p>
+    <div class="modal-actions">
+      <button class="btn-primary" id="btnStart">Start Learning</button>
+      <button id="btnContinue" hidden>Continue</button>
+      <button id="btnReset2">Reset Progress</button>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="brand">
+    <h1>
+      <span>&#x1f525; PyForge</span>
+      <span class="pill" id="levelPill">Level 1</span>
+    </h1>
+  </div>
+  <div class="xp-wrap">
+    <span id="xpLabel">XP: 0 / 100</span>
+    <div class="xp-bar-outer"><div class="xp-bar-inner" id="xpBar" style="width:0%"></div></div>
+  </div>
+</header>
+
+<main>
+  <!-- Left: Lesson -->
+  <section class="card lesson-card">
+    <div class="card-header">Lesson</div>
+    <div class="card-body" id="lessonBody">
+      <h3 class="challenge-title" id="chTitle">Loading...</h3>
+      <div class="challenge-subtitle" id="chSubtitle"></div>
+      <div class="lesson-text" id="chInstructions"></div>
+      <div class="hint-area" id="hintArea"></div>
+      <div class="ref-panel">
+        <button class="ref-toggle" id="refToggle">&#x1f4d6; Quick Reference</button>
+        <div class="ref-content" id="refContent" hidden></div>
+      </div>
+      <div class="nav-btns">
+        <button id="btnPrev" disabled>&laquo; Previous</button>
+        <button id="btnNext">Next &raquo;</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Center: Editor -->
+  <section class="card editor-card">
+    <div class="card-header">&#x1f4bb; Python Editor</div>
+    <div class="editor-wrap">
+      <textarea class="code-area" id="codeArea" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
+      <div class="output-area" id="outputArea">Output will appear here...</div>
+      <div class="btn-bar">
+        <button class="btn-run" id="btnRun">&#x25b6; Run</button>
+        <button class="btn-check" id="btnCheck">&#x2713; Check</button>
+        <span class="spacer"></span>
+        <button id="btnResetCode">&#x21bb; Reset Code</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Right: Progress -->
+  <section class="card progress-card">
+    <div class="card-header">Progress</div>
+    <div class="card-body">
+      <div class="section-title">Levels</div>
+      <ul class="level-list" id="levelList"></ul>
+      <div class="section-title">Achievements</div>
+      <div id="achievementList"></div>
+    </div>
+  </section>
+</main>
+
+<!-- Teacher Password Modal -->
+<div class="teacher-pw-modal" id="teacherPwModal" hidden>
+  <div class="teacher-pw-box">
+    <h3>&#x1f512; Teacher Mode</h3>
+    <p style="color:var(--muted);font-size:13px;margin:0 0 14px">Enter password to unlock</p>
+    <input type="password" id="teacherPwInput" placeholder="&bull;&bull;&bull;&bull;" autocomplete="off">
+    <div class="pw-error" id="teacherPwError"></div>
+    <div class="modal-actions">
+      <button class="btn-primary" id="teacherPwSubmit">Unlock</button>
+      <button id="teacherPwCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Teacher Panel (replaces progress panel when active) -->
+<div class="card teacher-panel" id="teacherPanel" hidden>
+  <div class="card-header">&#x1f9d1;&#x200d;&#x1f3eb; Teacher Mode</div>
+  <div class="card-body">
+
+    <!-- Tab navigation -->
+    <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px;">
+      <button class="t-btn active-t-btn" onclick="setTeacherTab('solution')">Solution</button>
+      <button class="t-btn" onclick="setTeacherTab('overview')">Overview</button>
+      <button class="t-btn" onclick="setTeacherTab('didactics')">Didactics</button>
+      <button class="t-btn" onclick="setTeacherTab('notes')">Notes</button>
+      <button class="t-btn" style="margin-left:auto;color:var(--bad);border-color:rgba(255,107,107,.3)" onclick="exitTeacherMode()">&#x2716; Exit</button>
+    </div>
+
+    <!-- Solution Tab -->
+    <div id="tTabSolution">
+      <div class="t-section">
+        <div class="t-section-title" id="tSolutionTitle">Solution: Challenge 1.1</div>
+        <div class="t-solution-box" id="tSolutionCode">Loading...</div>
+      </div>
+      <div class="t-section">
+        <div class="t-section-title">All Hints</div>
+        <div class="t-hint-box" id="tAllHints"></div>
+      </div>
+      <div class="t-section">
+        <div class="t-section-title">Validation Logic</div>
+        <div class="t-validation-box" id="tValidation"></div>
+      </div>
+      <div style="margin-top:8px">
+        <button class="t-btn" id="tLoadSolution" onclick="loadSolutionInEditor()">&#x1f4cb; Load solution into editor</button>
+        <button class="t-btn" id="tRunSolution" onclick="runSolutionInEditor()">&#x25b6; Run solution</button>
+      </div>
+    </div>
+
+    <!-- Overview Tab -->
+    <div id="tTabOverview" hidden>
+      <div class="t-section">
+        <div class="t-section-title">All Challenges Overview</div>
+        <table class="t-overview-table" id="tOverviewTable">
+          <thead><tr><th>#</th><th>Challenge</th><th>XP</th><th>Status</th></tr></thead>
+          <tbody id="tOverviewBody"></tbody>
+        </table>
+      </div>
+      <div class="t-section" style="margin-top:12px;">
+        <div class="t-section-title">Statistics</div>
+        <div id="tStats" style="font-size:12px;color:var(--muted);line-height:1.8;"></div>
+      </div>
+    </div>
+
+    <!-- Didactics Tab -->
+    <div id="tTabDidactics" hidden>
+      <div class="t-section">
+        <div class="t-section-title">Didactic Notes for Current Challenge</div>
+        <div class="t-hint-box" id="tDidacticNotes"></div>
+      </div>
+      <div class="t-section">
+        <div class="t-section-title">Common Mistakes &amp; Misconceptions</div>
+        <div class="t-hint-box" id="tCommonErrors"></div>
+      </div>
+      <div class="t-section">
+        <div class="t-section-title">Differentiation Ideas</div>
+        <div class="t-hint-box" id="tDifferentiation"></div>
+      </div>
+    </div>
+
+    <!-- Notes Tab -->
+    <div id="tTabNotes" hidden>
+      <div class="t-section">
+        <div class="t-section-title">Your Notes (saved in browser)</div>
+        <textarea class="t-notes-area" id="tNotesArea" placeholder="Write your notes here... (auto-saved)"></textarea>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  PyForge &middot; Dr. Winkelmann &middot; Python Learning Game
+  <button class="teacher-footer-btn" id="teacherBtn">&#x1f512;</button>
+</footer>
+
+<script src="skulpt.min.js"></script>
+<script src="skulpt-stdlib.js"></script>
+<script src="pyforge-data.js"></script>
+<script src="pyforge.js"></script>
+</body>
+</html>
