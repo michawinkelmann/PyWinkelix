@@ -295,6 +295,23 @@ function revealHint() {
   renderLesson();
 }
 
+function handleDownload() {
+  const ch = getCurrentChallenge();
+  if (!ch) return;
+  const code = $("codeArea").value;
+  const slug = ch.title.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/(^_|_$)/g, "");
+  const filename = `challenge_${ch.id}_${slug}.py`;
+  const blob = new Blob([code], { type: "text/x-python" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 function handleResetCode() {
   const ch = getCurrentChallenge();
   if (!ch) return;
@@ -519,6 +536,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // Editor buttons
   $("btnRun").addEventListener("click", handleRun);
   $("btnCheck").addEventListener("click", handleCheck);
+  $("btnDownload").addEventListener("click", handleDownload);
   $("btnResetCode").addEventListener("click", handleResetCode);
   $("btnPrev").addEventListener("click", goPrev);
   $("btnNext").addEventListener("click", goNext);
