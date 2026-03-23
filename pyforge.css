@@ -313,6 +313,12 @@ main {
   color: #ffe7b2 !important;
   font-weight: 600;
 }
+.btn-download {
+  background: rgba(100,180,255,.1) !important;
+  border-color: rgba(100,180,255,.3) !important;
+  color: #a0d4ff !important;
+  font-weight: 600;
+}
 .btn-bar .spacer { flex: 1; }
 
 /* ─── Progress Panel ─── */
