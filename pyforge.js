@@ -47,42 +47,89 @@ function renderAll() {
 
 function renderHeader() {
   const level = LEVELS[state.currentLevel];
-  $("levelPill").textContent = `Level ${level.id}: ${level.title}`;
+  $("levelPill").textContent = `${t("level")} ${level.id}: ${tLevel(level)}`;
   const totalXp = state.xp;
   const levelXp = level.id * 100;
   const prevLevelXp = (level.id - 1) * 100;
   const progress = Math.min(100, ((totalXp - prevLevelXp) / (levelXp - prevLevelXp)) * 100);
   $("xpBar").style.width = Math.max(0, progress) + "%";
   $("xpLabel").textContent = `XP: ${totalXp}`;
+
+  // Update static UI labels
+  $("hdrLesson").textContent = t("lesson");
+  $("hdrEditor").innerHTML = `\u{1f4bb} ${t("pythonEditor")}`;
+  $("hdrProgress").textContent = t("progress");
+  $("hdrLevels").textContent = t("levels");
+  $("hdrAchievements").textContent = t("achievements");
+  $("btnRun").innerHTML = t("btnRun");
+  $("btnCheck").innerHTML = t("btnCheck");
+  $("btnDownload").innerHTML = t("btnDownload");
+  $("btnResetCode").innerHTML = t("btnResetCode");
+  $("btnPrev").innerHTML = t("btnPrev");
+  $("btnNext").innerHTML = t("btnNext");
+  $("refToggle").innerHTML = t("quickRef");
+  $("footerText").innerHTML = t("footer");
+
+  // Welcome modal
+  $("welcomeTitle").textContent = t("welcomeTitle");
+  $("welcomeText").textContent = t("welcomeText");
+  $("welcomeSubtext").textContent = t("welcomeSubtext");
+  $("btnStart").textContent = t("btnStart");
+  $("btnContinue").textContent = t("btnContinue");
+  $("btnReset2").textContent = t("btnResetProgress");
+
+  // Teacher panel static labels
+  $("teacherPwTitle").textContent = t("teacherMode");
+  $("teacherPwPrompt").textContent = t("teacherPwPrompt");
+  $("hdrTeacher").innerHTML = `\u{1f9d1}\u200d\u{1f3eb} ${t("teacherMode")}`;
+  $("tBtnSolution").textContent = t("solution");
+  $("tBtnOverview").textContent = t("overview");
+  $("tBtnDidactics").textContent = t("didactics");
+  $("tBtnNotes").textContent = t("notes");
+  $("tBtnExit").innerHTML = `\u2716 ${t("exit")}`;
+  $("tAllHintsTitle").textContent = t("allHints");
+  $("tValidationTitle").textContent = t("validationLogic");
+  $("tLoadSolution").innerHTML = t("loadSolution");
+  $("tRunSolution").innerHTML = t("runSolution");
+  $("tOverviewTitle").textContent = t("allChallengesOverview");
+  $("tThChallenge").textContent = t("challengeCol");
+  $("tThStatus").textContent = t("status");
+  $("tStatsTitle").textContent = t("statistics");
+  $("tDidacticTitle").textContent = t("didacticNotes");
+  $("tCommonErrorsTitle").textContent = t("commonMistakes");
+  $("tDiffTitle").textContent = t("differentiationIdeas");
+  $("tNotesTitle").textContent = t("yourNotes");
+  $("tNotesArea").placeholder = t("notesPlaceholder");
 }
 
 function renderLesson() {
   const ch = getCurrentChallenge();
   if (!ch) return;
-  $("chTitle").textContent = `Challenge ${ch.id}: ${ch.title}`;
-  $("chSubtitle").textContent = `${LEVELS[state.currentLevel].title} \u2022 ${ch.xp} XP`;
-  $("chInstructions").innerHTML = ch.instructions;
+  $("chTitle").textContent = `${t("challenge")} ${ch.id}: ${tChTitle(ch)}`;
+  $("chSubtitle").textContent = `${tLevel(LEVELS[state.currentLevel])} \u2022 ${ch.xp} XP`;
+  $("chInstructions").innerHTML = tChInstructions(ch);
 
   // Hints
   const hintArea = $("hintArea");
   const usedHints = state.hintsUsed[ch.id] || 0;
+  const hints = tChHints(ch);
   let hintHTML = "";
-  if (ch.hints && ch.hints.length > 0) {
-    for (let i = 0; i < Math.min(usedHints, ch.hints.length); i++) {
-      hintHTML += `<div class="hint-item">\u{1f4a1} ${ch.hints[i]}</div>`;
+  if (hints && hints.length > 0) {
+    for (let i = 0; i < Math.min(usedHints, hints.length); i++) {
+      hintHTML += `<div class="hint-item">\u{1f4a1} ${hints[i]}</div>`;
     }
-    if (usedHints < ch.hints.length) {
-      hintHTML += `<button class="hint-btn" onclick="revealHint()">\u{1f4a1} Hint ${usedHints + 1}/${ch.hints.length}</button>`;
+    if (usedHints < hints.length) {
+      hintHTML += `<button class="hint-btn" onclick="revealHint()">\u{1f4a1} ${t("hint")} ${usedHints + 1}/${hints.length}</button>`;
     }
   }
   if (state.completed.includes(ch.id)) {
-    hintHTML += '<div class="complete-banner">\u2705 Challenge Complete!</div>';
+    hintHTML += `<div class="complete-banner">\u2705 ${t("challengeComplete")}</div>`;
   }
   hintArea.innerHTML = hintHTML;
 
   // Code
   if (!$("codeArea").dataset.loaded || $("codeArea").dataset.loaded !== ch.id) {
-    $("codeArea").value = ch.starter;
+    $("codeArea").value = tChStarter(ch);
     $("codeArea").dataset.loaded = ch.id;
   }
 
@@ -99,18 +146,18 @@ function renderLesson() {
 function renderReference() {
   const lvl = state.currentLevel;
   const refs = [
-    `<h4>print()</h4><code>print("text")</code> — display output<br><code>print(f"Value: {x}")</code> — f-string formatting`,
-    `<h4>Conditionals</h4><code>if x &gt; 0:</code> / <code>elif:</code> / <code>else:</code><br>Operators: <code>== != &lt; &gt; &lt;= &gt;= and or not</code>`,
-    `<h4>Loops</h4><code>for i in range(n):</code><br><code>while condition:</code><br><code>break</code> / <code>continue</code>`,
-    `<h4>Functions</h4><code>def name(param=default):</code><br><code>return value</code>`,
-    `<h4>Lists</h4><code>lst = [1, 2, 3]</code><br><code>.append() .remove() .sort()</code><br><code>lst[0:3]</code> — slicing`,
-    `<h4>Dicts</h4><code>d = {"key": "val"}</code><br><code>d["key"]</code> access<br><code>for k, v in d.items():</code>`,
-    `<h4>Strings</h4><code>.split() .strip() .lower() .upper()</code><br><code>.startswith() .replace()</code><br><code>ord() chr()</code>`,
-    `<h4>Classes</h4><code>class Name:</code><br><code>def __init__(self):</code><br><code>def __str__(self):</code>`,
-    `<h4>Inheritance</h4><code>class Child(Parent):</code><br><code>super().__init__()</code><br>Override methods`,
-    `<h4>2D Lists</h4><code>grid[row][col]</code><br><code>[[val]*cols for _ in range(rows)]</code>`,
-    `<h4>Advanced</h4><code>[x for x in lst if cond]</code><br><code>try: except:</code><br><code>lambda x: x*2</code>`,
-    `<h4>Everything!</h4>You know it all now. Check previous levels for reference.`,
+    `<h4>print()</h4><code>print("text")</code> — ${t("refPrint")}<br><code>print(f"Value: {x}")</code> — ${t("refFstringFmt")}`,
+    `<h4>${t("refConditionals")}</h4><code>if x &gt; 0:</code> / <code>elif:</code> / <code>else:</code><br>Operators: <code>== != &lt; &gt; &lt;= &gt;= and or not</code>`,
+    `<h4>${t("refLoops")}</h4><code>for i in range(n):</code><br><code>while condition:</code><br><code>break</code> / <code>continue</code>`,
+    `<h4>${t("refFunctions")}</h4><code>def name(param=default):</code><br><code>return value</code>`,
+    `<h4>${t("refLists")}</h4><code>lst = [1, 2, 3]</code><br><code>.append() .remove() .sort()</code><br><code>lst[0:3]</code> — ${t("refSlicing")}`,
+    `<h4>${t("refDicts")}</h4><code>d = {"key": "val"}</code><br><code>d["key"]</code> ${t("refAccess")}<br><code>for k, v in d.items():</code>`,
+    `<h4>${t("refStrings")}</h4><code>.split() .strip() .lower() .upper()</code><br><code>.startswith() .replace()</code><br><code>ord() chr()</code>`,
+    `<h4>${t("refClasses")}</h4><code>class Name:</code><br><code>def __init__(self):</code><br><code>def __str__(self):</code>`,
+    `<h4>${t("refInheritance")}</h4><code>class Child(Parent):</code><br><code>super().__init__()</code><br>${t("refOverrideMethods")}`,
+    `<h4>${t("ref2DLists")}</h4><code>grid[row][col]</code><br><code>[[val]*cols for _ in range(rows)]</code>`,
+    `<h4>${t("refAdvanced")}</h4><code>[x for x in lst if cond]</code><br><code>try: except:</code><br><code>lambda x: x*2</code>`,
+    `<h4>${t("refEverything")}</h4>${t("refKnowItAll")}`,
   ];
   $("refContent").innerHTML = refs.slice(0, lvl + 1).join("<br>");
 }
@@ -128,7 +175,7 @@ function renderProgress() {
 
     html += `<li class="level-item ${itemClass}" onclick="goToLevel(${li})">
       <span class="level-dot ${dotClass}"></span>
-      <span style="flex:1">${level.id}. ${level.title}</span>
+      <span style="flex:1">${level.id}. ${tLevel(level)}</span>
       <span style="font-size:11px;color:var(--muted)">${doneCount}/${challenges.length}</span>
     </li>`;
 
@@ -139,7 +186,7 @@ function renderProgress() {
         const active = ci === state.currentChallenge;
         html += `<li class="ch-item ${done ? 'done' : ''} ${active ? 'active-ch' : ''}" onclick="goToChallenge(${li},${ci})">
           <span class="ch-icon">${done ? '\u2713' : active ? '\u25cf' : '\u25cb'}</span>
-          ${ch.id} ${ch.title}
+          ${ch.id} ${tChTitle(ch)}
         </li>`;
       });
       html += '</ul>';
@@ -151,11 +198,14 @@ function renderProgress() {
   let achHTML = "";
   ACHIEVEMENTS.forEach(ach => {
     const unlocked = state.unlockedAchievements.includes(ach.id);
+    const achDE = (currentLang === "de" && typeof ACHIEVEMENTS_DE !== "undefined") ? ACHIEVEMENTS_DE[ach.id] : null;
+    const achName = achDE ? achDE.name : ach.name;
+    const achDesc = achDE ? achDE.desc : ach.desc;
     achHTML += `<div class="achievement ${unlocked ? 'unlocked' : ''}">
       <span class="ach-icon">${unlocked ? ach.icon : '\u{1f512}'}</span>
       <div class="ach-info">
-        <div class="ach-name">${ach.name}</div>
-        <div class="ach-desc">${ach.desc}</div>
+        <div class="ach-name">${achName}</div>
+        <div class="ach-desc">${achDesc}</div>
       </div>
     </div>`;
   });
@@ -210,10 +260,10 @@ function runPython(code, isCheck) {
 async function handleRun() {
   const code = $("codeArea").value;
   const outEl = $("outputArea");
-  outEl.innerHTML = '<span class="info">Running...</span>';
+  outEl.innerHTML = `<span class="info">${t("running")}</span>`;
   try {
     const output = await runPython(code, false);
-    outEl.innerHTML = escapeHTML(output) || '<span class="info">(No output)</span>';
+    outEl.innerHTML = escapeHTML(output) || `<span class="info">${t("noOutput")}</span>`;
   } catch(err) {
     outEl.innerHTML = `<span class="err">${escapeHTML(String(err))}</span>`;
     state.errorsSeen++;
@@ -225,7 +275,7 @@ async function handleCheck() {
   if (!ch) return;
   const code = $("codeArea").value;
   const outEl = $("outputArea");
-  outEl.innerHTML = '<span class="info">Checking...</span>';
+  outEl.innerHTML = `<span class="info">${t("checking")}</span>`;
 
   try {
     const output = await runPython(code, true);
@@ -388,10 +438,10 @@ async function attemptTeacherLogin() {
     $("teacherPwInput").value = "";
     $("teacherPwError").textContent = "";
     $("teacherBtn").classList.add("active-teacher");
-    $("teacherBtn").innerHTML = "\u{1f513} Teacher";
+    $("teacherBtn").innerHTML = currentLang === "de" ? "\u{1f513} Lehrer" : "\u{1f513} Teacher";
     activateTeacherUI();
   } else {
-    $("teacherPwError").textContent = "Incorrect password.";
+    $("teacherPwError").textContent = t("teacherPwError");
     $("teacherPwInput").value = "";
     $("teacherPwInput").focus();
   }
@@ -442,9 +492,10 @@ function renderTeacherPanel() {
   if (!ch) return;
 
   // Solution tab
-  $("tSolutionTitle").textContent = `Solution: Challenge ${ch.id} \u2014 ${ch.title}`;
-  $("tSolutionCode").textContent = SOLUTIONS[ch.id] || "(No solution available)";
-  $("tAllHints").innerHTML = ch.hints ? "<ol>" + ch.hints.map(h => `<li>${h}</li>`).join("") + "</ol>" : "(No hints)";
+  $("tSolutionTitle").textContent = `${t("solutionFor")} ${ch.id} \u2014 ${tChTitle(ch)}`;
+  $("tSolutionCode").textContent = SOLUTIONS[ch.id] || t("noSolution");
+  const hints = tChHints(ch);
+  $("tAllHints").innerHTML = hints ? "<ol>" + hints.map(h => `<li>${h}</li>`).join("") + "</ol>" : t("noHints");
   $("tValidation").textContent = ch.check.toString();
 
   // Overview tab
@@ -467,19 +518,20 @@ function renderTeacherPanel() {
   });
   $("tOverviewBody").innerHTML = tbody;
   $("tStats").innerHTML = `
-    Challenges completed: <b>${doneCh}/${totalCh}</b><br>
-    XP earned: <b>${doneXP}/${totalXP}</b><br>
-    Hints used: <b>${Object.values(state.hintsUsed).reduce((a,b)=>a+b,0)}</b><br>
-    Errors encountered: <b>${state.errorsSeen || 0}</b><br>
-    Hint-free completions: <b>${state.hintFreeCount || 0}</b><br>
-    Achievements: <b>${state.unlockedAchievements.length}/${ACHIEVEMENTS.length}</b>
+    ${t("challengesCompleted")}: <b>${doneCh}/${totalCh}</b><br>
+    ${t("xpEarned")}: <b>${doneXP}/${totalXP}</b><br>
+    ${t("hintsUsed")}: <b>${Object.values(state.hintsUsed).reduce((a,b)=>a+b,0)}</b><br>
+    ${t("errorsEncountered")}: <b>${state.errorsSeen || 0}</b><br>
+    ${t("hintFreeCompletions")}: <b>${state.hintFreeCount || 0}</b><br>
+    ${t("achievements")}: <b>${state.unlockedAchievements.length}/${ACHIEVEMENTS.length}</b>
   `;
 
   // Didactics tab
-  const did = DIDACTICS[level.id] || {};
-  $("tDidacticNotes").innerHTML = did.notes || "No specific notes for this level.";
-  $("tCommonErrors").innerHTML = did.errors || "No common errors documented.";
-  $("tDifferentiation").innerHTML = did.differentiation || "No differentiation ideas documented.";
+  const didSrc = (currentLang === "de" && typeof DIDACTICS_DE !== "undefined") ? DIDACTICS_DE : DIDACTICS;
+  const did = didSrc[level.id] || DIDACTICS[level.id] || {};
+  $("tDidacticNotes").innerHTML = did.notes || t("noNotes");
+  $("tCommonErrors").innerHTML = did.errors || t("noErrors");
+  $("tDifferentiation").innerHTML = did.differentiation || t("noDifferentiation");
 
   // Notes tab
   const noteKey = "pyforge_teacher_notes";
@@ -526,7 +578,7 @@ document.addEventListener("DOMContentLoaded", function() {
     renderAll();
   });
   $("btnReset2").addEventListener("click", () => {
-    if (confirm("Reset all progress?")) {
+    if (confirm(t("confirmReset"))) {
       resetState();
       $("welcomeModal").hidden = true;
       renderAll();
@@ -591,6 +643,11 @@ document.addEventListener("DOMContentLoaded", function() {
     const key = `pyforge_teacher_notes_L${state.currentLevel}_C${state.currentChallenge}`;
     localStorage.setItem(key, $("tNotesArea").value);
   });
+
+  // Set initial language
+  document.documentElement.lang = currentLang;
+  updateStaticUI();
+  $("outputArea").textContent = t("outputPlaceholder");
 
   renderAll();
 });
