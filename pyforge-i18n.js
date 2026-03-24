@@ -49,13 +49,13 @@ function tChStarter(ch) {
 function updateStaticUI() {
   const langBtn = document.getElementById("langBtn");
   if (langBtn) langBtn.textContent = currentLang === "de" ? "DE | en" : "en | DE";
-  document.title = currentLang === "de" ? "PyForge - Python lernen" : "PyForge - Learn Python";
+  document.title = currentLang === "de" ? "PyWinkelix - Python lernen" : "PyWinkelix - Learn Python";
 }
 
 // ─── UI Strings ───
 const UI_STRINGS = {
   // Welcome modal
-  welcomeTitle:        { en: "Welcome to PyForge",  de: "Willkommen bei PyForge" },
+  welcomeTitle:        { en: "Welcome to PyWinkelix",  de: "Willkommen bei PyWinkelix" },
   welcomeText:         { en: "Learn Python step by step through 12 levels of gaming-themed challenges.",
                          de: "Lerne Python Schritt für Schritt durch 12 Level mit spielerischen Aufgaben." },
   welcomeSubtext:      { en: "Built-in Python interpreter · No setup required · Progress saves automatically",
@@ -140,8 +140,8 @@ const UI_STRINGS = {
   noHints:             { en: "(No hints)",  de: "(Keine Hinweise)" },
 
   // Footer
-  footer:              { en: "PyForge · Dr. Winkelmann · Python Learning Game",
-                         de: "PyForge · Dr. Winkelmann · Python-Lernspiel" },
+  footer:              { en: "PyWinkelix · Dr. Winkelmann · Python Learning Game",
+                         de: "PyWinkelix · Dr. Winkelmann · Python-Lernspiel" },
 
   // Reference headings (non-code parts)
   refPrint:            { en: "display output",  de: "Ausgabe anzeigen" },
