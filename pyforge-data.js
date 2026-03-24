@@ -1616,7 +1616,7 @@ Hero wins with 24 HP remaining!</code></pre>`,
         if(!output.includes("TOP 3") && !output.includes("top 3")) return {pass:false,msg:"Should display top 3 header"};
         if(!output.includes("Aria") || !output.includes("9500")) return {pass:false,msg:"Aria with 9500 should appear"};
         if(!output.includes("Zoe") || !output.includes("Luna")) return {pass:false,msg:"Zoe and Luna should be in top 3"};
-        return {pass:true,msg:"High score system complete! Congratulations - you've finished PyForge!"};
+        return {pass:true,msg:"High score system complete! Congratulations - you've finished PyWinkelix!"};
       },
       title_de:"Highscore-Tabelle",
       instructions_de:`<p>Kombiniere Listen, Dicts, Sortierung und Funktionen, um ein Highscore-System zu bauen.</p>
