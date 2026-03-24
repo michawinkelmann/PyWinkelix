@@ -79,6 +79,26 @@ header {
   border-radius: 99px;
   transition: width .6s ease;
 }
+/* ─── Language Button ─── */
+.lang-btn {
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  letter-spacing: .5px;
+  transition: border-color .2s, color .2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.lang-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .xp-float {
   position: fixed;
   pointer-events: none;
